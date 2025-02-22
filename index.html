@@ -1,46 +1,44 @@
 <!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+   
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2"></script>
     <style>
         body {
             background-color: #f8f9fa;
         }
         #wheel {
-            border: 8px solid #333;
+            border: 10px solid #333;
             border-radius: 50%;
             margin: 0 auto;
             transition: transform 4s cubic-bezier(0.6, 0, 0, 1);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-            width: 400px;
-            height: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
         #wheel-center {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             background: red;
-            border-radius: 50%;
+            border-radius: 45%;
             z-index: 10;
         }
         #wheel-pin {
             position: absolute;
-            top: 45.3%;
-            left: 66.6%;
-            transform: translateX(-50%) rotate(90deg);
-            font-size: 20px;
+            top: 46%;
+            left: 71.5%;
+            transform: translate(-50%) rotate(90deg);
+            font-size: 2vw;
             z-index: 10;
         }
         .button-container {
             position: absolute;
             top: 50%;
-            right: 15%;
+            right: 5%;
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
@@ -52,7 +50,7 @@
             width: 130px;
         }
 
-        body {
+       body {
     background-color: #f8f9fa;
     font-family: 'Courier New', Courier, monospace; /* Estilo de consola retro */
     color: #000000; /* Texto verde como en terminal */
@@ -68,7 +66,7 @@ h1 {
     border: none;
     animation: typing 5s steps(30) 1, blink 0.7s step-end infinite; /* Animación de escritura y parpadeo del cursor */
     font-family: 'Courier New', Courier, monospace;
-    font-weight: bold; /* Negrita */
+    font-weight: bolder; /* Negrita */
 }
 
 /* Animación para el efecto de escritura */
@@ -88,38 +86,40 @@ h1 {
     width: 130px;
     border: 2px solid #000; /* Borde negro */
     background-color: transparent; /* Fondo transparente */
-    color: #000000;
+    color: #000000; /* Texto verde */
     transition: all 0.3s ease;
     font-family: 'Courier New', Courier, monospace; /* Estilo retro en los botones */
     font-weight: bolder; /* Hacer el texto en negrita */
 }
 
 .spin-btn:hover, .reset-btn:hover {
-    background-color: #0000 00;
+    background-color: #ffffff;
     color: black; /* Cambiar el color al hacer hover */
 }
+
 
     </style>
 </head>
 <body>
- <div class="container">
-     
+<div class="container">
+    
     <div id="piliapp" class="row">
         <div class="col-12">
             <div class="row">
                 <div id="header" class="col-12 text-center pt-3 pb-3">
-                    <h1>Ruleta Aleatoria</h1>
-                </div>
-                <div class="col-12 text-center" style="position: relative;">
-                    <canvas id="wheel" width="1000" height="1000"></canvas>
+    <h1 id="titulo">Ruleta Aleatoria</h1>
+</div>
+
+                <div class="col-12 text-center">
+                    <canvas id="wheel" width="500" height="500"></canvas>
                     <div id="wheel-center"></div>
                     <div id="wheel-pin" style="color:red">▼</div>
-                    <div class="button-container">
-                        <input type="button" value="Iniciar" class="spin-btn btn btn-primary">
-                        <input type="button" value="Reiniciar" class="reset-btn btn btn-danger">
-                    </div>
                 </div>
-                <div id="resultado" class="col-12 text-center mt-3" style="font-size:x-large">Número ganado: -</div>
+                <div class="col-12 text-center mt-3">
+                    <input type="button" value="Iniciar" class="spin-btn btn btn-primary">
+                    <input type="button" value="Reiniciar" class="reset-btn btn btn-danger">
+                </div>
+                <div id="resultado" class="col-12 text-center mt-3" style="font-size:x-large" >Número ganado: -</div>
                 <div id="ultimos-numeros" class="col-12 text-center mt-3" style="font-size:x-large">Últimos 5 números obtenidos: -</div>
             </div>
         </div>
@@ -138,7 +138,7 @@ let anguloActual = 0;
 
 function getRandomSoftColor() {
     const hue = Math.random() * 360;
-    return `hsl(${hue}, 50%, 53.5%)`; // Colores pastel aleatorios
+    return `hsl(${hue}, 50%, 50%)`; // Colores suaves, no brillantes
 }   
 
 function dibujarRuleta() {
@@ -153,33 +153,21 @@ function dibujarRuleta() {
         ctx.moveTo(radio, radio);
         ctx.arc(radio, radio, radio, anguloInicio, anguloFin);
         ctx.closePath();
-        ctx.fillStyle = getRandomSoftColor(); 
+        ctx.fillStyle = getRandomSoftColor(); // Colores pastel aleatorios
         ctx.fill();
         
         ctx.save();
         ctx.translate(radio, radio);
         ctx.rotate(anguloInicio + anguloPorSector / 2);
         ctx.fillStyle = '#000000';
-        ctx.font = 'bold 25px Arial';
+        ctx.font = 'bold 14px Arial';
         ctx.textAlign = 'left';
-        ctx.fillText(numeros[i], radio * 0.90, 10);
+        ctx.fillText(numeros[i], radio * 0.90, 3.5);
         ctx.restore();
     }
 }
 
 dibujarRuleta();
-
-function lanzarConfeti() {
-    for (let i = 0; i < 3; i++) {
-        setTimeout(() => {
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
-        }, i * 500);
-    }
-}
 
 function girarRuleta() {
     const vueltas = Math.floor(Math.random() * 10) + 5;
@@ -194,7 +182,6 @@ function girarRuleta() {
         const numeroFinal = numeros[numeroGanador];
         
         resultadoDiv.textContent = `Número ganado: ${numeroFinal}`;
-        lanzarConfeti();
         
         ultimoResultado.unshift(numeroFinal);
         if (ultimoResultado.length > 5) {
