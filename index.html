@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <style>
         body {
             background-color: #f8f9fa;
@@ -18,7 +18,7 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
         #wheel-center {
-            position:relative;
+            position: absolute;
             top: 47.1%;
             left: 51%;
             transform: translate(-50%, -50%);
@@ -64,74 +64,57 @@
             display: block;
             margin: 0 auto;
         }
-        #wheel-center, #wheel-pin {
-            position: absolute;
-        }
-        .button-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-
         body {
-            background-color: #f8f9fa;
             font-family: 'Courier New', Courier, monospace; /* Estilo de consola retro */
-            color: #000000; /* Texto verde como en terminal */
+            color: #000000; /* Texto negro */
         }
-
         h1 {
-            margin: 0 auto;
-            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             text-align: center;
+            width: 100%;
             font-size: 36px;
             margin-bottom: 20px;
-            display: block;
             padding: 10px;
-            white-space: nowrap;
-            overflow: hidden;
-            border: none;
-            animation: typing 5s steps(30) 1, blink 0.7s step-end infinite; /* Animación de escritura y parpadeo del cursor */
             font-family: 'Courier New', Courier, monospace;
-            font-weight: bolder; /* Negrita */
+            font-weight: bolder;
         }
-
-/* Animación para el efecto de escritura */
-@keyframes typing {
-    0% { width: 0; }
-    100% { width: 100%; }
-}
-
-/* Animación para el cursor parpadeante */
-@keyframes blink {
-    50% { border-right-color: transparent; }
-}
-
-.spin-btn, .reset-btn {
-    font-size: 1.2rem;
-    padding: 8px 15px;
-    width: 130px;
-    border: 2px solid #000; /* Borde negro */
-    background-color: transparent; /* Fondo transparente */
-    color: #000000; /* Texto verde */
-    transition: all 0.3s ease;
-    font-family: 'Courier New', Courier, monospace; /* Estilo retro en los botones */
-    font-weight: bolder; /* Hacer el texto en negrita */
-}
-
-.spin-btn:hover, .reset-btn:hover {
-    background-color: #ffffff;
-    color: black; /* Cambiar el color al hacer hover */
-}
-
-
-</style>
+        .spin-btn, .reset-btn {
+            font-size: 1.2rem;
+            padding: 8px 15px;
+            width: 130px;
+            border: 2px solid #000; /* Borde negro */
+            background-color: transparent; /* Fondo transparente */
+            color: #000000; /* Texto negro */
+            transition: all 0.3s ease;
+            font-family: 'Courier New', Courier, monospace; /* Estilo retro en los botones */
+            font-weight: bolder; /* Hacer el texto en negrita */
+        }
+        .spin-btn:hover, .reset-btn:hover {
+            background-color: #ffffff;
+            color: black; /* Cambiar el color al hacer hover */
+        }
+        table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-
         <div id="piliapp" class="row">
             <div class="col-12">
-                <div class="row">
+                                <div class="row">
                     <div id="header" class="col-12 text-center pt-3 pb-3">
                         <h1 id="titulo">Ruleta Aleatoria</h1>
                     </div>
@@ -142,15 +125,26 @@
                             <div id="wheel-center"></div>
                             <div id="wheel-pin" style="color:red">▼</div>
                         </div>
-
                     </div>
 
                     <div class="col-12 text-center mt-3">
                         <input type="button" value="Iniciar" class="spin-btn btn btn-primary">
-                        <input type="button" value="Reiniciar" class="reset-btn btn btn-danger">
+                        <input type="button" value="Acomodar" class="reset-btn btn btn-danger">
                     </div>
-                    <div id="resultado" class="col-12 text-center mt-3" style="font-size:x-large" >Número ganado: -</div>
-                    <div id="ultimos-numeros" class="col-12 text-center mt-3" style="font-size:x-large">Últimos 5 números obtenidos: -</div>
+                    <div id="resultado" class="col-12 text-center mt-3" style="font-size:x-large">Número ganado: -</div>
+                    
+                    <!-- Tabla para mostrar los resultados -->
+                    <table id="resultados-tabla">
+                        <thead>
+                            <tr>
+                                <th>Giro</th>
+                                <th>Número Ganado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Los resultados se agregarán aquí -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -161,74 +155,91 @@
         const spinButton = document.querySelector('.spin-btn');
         const resetButton = document.querySelector('.reset-btn');
         const resultadoDiv = document.getElementById('resultado');
-        const ultimosNumerosDiv = document.getElementById('ultimos-numeros');
-        const numeros = Array.from({ length: 100 }, (_, i) => i);
-        let ultimoResultado = [];
+        const resultadosTabla = document.getElementById('resultados-tabla').getElementsByTagName('tbody')[0];
+        let numeros = Array.from({ length: 100 }, (_, i) => i); // Números del 1 al 100
         let anguloActual = 0;
+
+        // Función para mezclar los números
+        function mezclarNumeros() {
+            for (let i = numeros.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [numeros[i], numeros[j]] = [numeros[j], numeros[i]]; // Intercambiar
+            }
+        }
 
         function getRandomSoftColor() {
             const hue = Math.random() * 360;
-    return `hsl(${hue}, 50%, 50%)`; // Colores suaves, no brillantes
-}   
-
-function dibujarRuleta() {
-    const numSectores = numeros.length;
-    const anguloPorSector = (2 * Math.PI) / numSectores;
-    const radio = canvas.width / 2;
-
-    for (let i = 0; i < numSectores; i++) {
-        const anguloInicio = i * anguloPorSector;
-        const anguloFin = (i + 1) * anguloPorSector;
-        ctx.beginPath();
-        ctx.moveTo(radio, radio);
-        ctx.arc(radio, radio, radio, anguloInicio, anguloFin);
-        ctx.closePath();
-        ctx.fillStyle = getRandomSoftColor(); // Colores pastel aleatorios
-        ctx.fill();
-        
-        ctx.save();
-        ctx.translate(radio, radio);
-        ctx.rotate(anguloInicio + anguloPorSector / 2);
-        ctx.fillStyle = '#000000';
-        ctx.font = 'bold 18px Arial';
-        ctx.textAlign = 'left';
-        ctx.fillText(numeros[i], radio * 0.92, 6);
-        ctx.restore();
-    }
-}
-
-dibujarRuleta();
-
-function girarRuleta() {
-    const vueltas = Math.floor(Math.random() * 10) + 5;
-    const anguloFinal = anguloActual + vueltas * 360 + Math.random() * 360;
-    anguloActual = anguloFinal % 360;
-    
-    canvas.style.transform = `rotate(${anguloFinal}deg)`;
-    
-    setTimeout(() => {
-        const anguloPorNumero = 360 / numeros.length;
-        const numeroGanador = Math.floor((360 - (anguloActual % 360)) / anguloPorNumero);
-        const numeroFinal = numeros[numeroGanador];
-        
-        resultadoDiv.textContent = `Número ganado: ${numeroFinal}`;
-        
-        ultimoResultado.unshift(numeroFinal);
-        if (ultimoResultado.length > 5) {
-            ultimoResultado.pop();
+            return `hsl(${hue}, 50%, 57%)`; // Colores suaves
         }
-        ultimosNumerosDiv.textContent = `Últimos 5 números obtenidos: ${ultimoResultado.join(', ')}`;
-    }, 4000);
-}
 
-spinButton.addEventListener('click', girarRuleta);
-resetButton.addEventListener('click', () => {
-    anguloActual = 0;
-    canvas.style.transform = 'rotate(0deg)';
-    resultadoDiv.textContent = 'Número ganado: -';
-    ultimoResultado = [];
-    ultimosNumerosDiv.textContent = 'Últimos 5 números obtenidos: -';
-});
-</script>
+        function dibujarRuleta() {
+            const numSectores = numeros.length;
+            const anguloPorSector = (2 * Math.PI) / numSectores;
+            const radio = canvas.width / 2;
+
+            for (let i = 0; i < numSectores; i++) {
+                const anguloInicio = i * anguloPorSector;
+                const anguloFin = (i + 1) * anguloPorSector;
+                ctx.beginPath();
+                ctx.moveTo(radio, radio);
+                ctx.arc(radio, radio, radio, anguloInicio, anguloFin);
+                ctx.closePath();
+                ctx.fillStyle = getRandomSoftColor(); // Colores pastel aleatorios
+                ctx.fill();
+                
+                ctx.save();
+                ctx.translate(radio, radio);
+                ctx.rotate(anguloInicio + anguloPorSector / 2);
+                ctx.fillStyle = '#000000';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(numeros[i], radio * 0.92, 6);
+                ctx.restore();
+            }
+        }
+
+        mezclarNumeros(); // Mezclar los números al inicio
+        dibujarRuleta(); // Dibujar la ruleta
+
+        function girarRuleta() {
+            const vueltas = Math.floor(Math.random() * 10) + 5; // Número de vueltas aleatorias
+            const anguloFinal = anguloActual + vueltas * 360 + Math.random() * 360; // Calcular el ángulo final
+            anguloActual = anguloFinal % 360; // Mantener el ángulo actual dentro de 0-360
+            
+            canvas.style.transform = `rotate(${anguloFinal}deg)`; // Aplicar la rotación
+            
+            setTimeout(() => {
+                const anguloPorNumero = 360 / numeros.length; // Calcular el ángulo por número
+                const numeroGanador = Math.floor((360 - (anguloActual % 360)) / anguloPorNumero); // Determinar el número ganador
+                                const numeroFinal = numeros[numeroGanador];
+                
+                resultadoDiv.textContent = `Número ganado: ${numeroFinal}`; // Mostrar el número ganado
+                
+                // Agregar el resultado a la tabla
+                const nuevaFila = resultadosTabla.insertRow();
+                const celdaGiro = nuevaFila.insertCell(0);
+                const celdaNumero = nuevaFila.insertCell(1);
+                celdaGiro.textContent = resultadosTabla.rows.length; // Número de giro
+                celdaNumero.textContent = numeroFinal; // Número ganado
+                
+                // Lanzar confeti
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }, 4000); // Esperar 4 segundos antes de mostrar el resultado
+        }
+
+        spinButton.addEventListener('click', girarRuleta); // Evento para girar la ruleta
+        resetButton.addEventListener('click', () => {
+            mezclarNumeros(); // Mezclar los números al hacer clic en "Acomodar"
+            anguloActual = 0; // Reiniciar el ángulo
+            canvas.style.transform = 'rotate(0deg)'; // Reiniciar la rotación
+            resultadoDiv.textContent = 'Número ganado: -'; // Reiniciar el resultado
+            resultadosTabla.innerHTML = ''; // Limpiar la tabla de resultados
+            dibujarRuleta(); // Redibujar la ruleta con los números mezclados
+        });
+    </script>
 </body>
 </html>
