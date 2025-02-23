@@ -131,14 +131,14 @@
                         <input type="button" value="Iniciar" class="spin-btn btn btn-primary">
                         <input type="button" value="Acomodar" class="reset-btn btn btn-danger">
                     </div>
-                    <div id="resultado" class="col-12 text-center mt-3" style="font-size:x-large">Número ganado: -</div>
+                    <div id="resultado" class="col-12 text-center mt-3" style="font-size:x-large">Número ganador: -</div>
                     
                     <!-- Tabla para mostrar los resultados -->
                     <table id="resultados-tabla">
                         <thead>
                             <tr>
                                 <th>Giro</th>
-                                <th>Número Ganado</th>
+                                <th>Número Ganador</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -213,7 +213,7 @@
                 const numeroGanador = Math.floor((360 - (anguloActual % 360)) / anguloPorNumero); // Determinar el número ganador
                                 const numeroFinal = numeros[numeroGanador];
                 
-                resultadoDiv.textContent = `Número ganado: ${numeroFinal}`; // Mostrar el número ganado
+                resultadoDiv.textContent = `Número ganador: ${numeroFinal}`; // Mostrar el número ganado
                 
                 // Agregar el resultado a la tabla
                 const nuevaFila = resultadosTabla.insertRow();
@@ -236,7 +236,7 @@
             mezclarNumeros(); // Mezclar los números al hacer clic en "Acomodar"
             anguloActual = 0; // Reiniciar el ángulo
             canvas.style.transform = 'rotate(0deg)'; // Reiniciar la rotación
-            resultadoDiv.textContent = 'Número ganado: -'; // Reiniciar el resultado
+            resultadoDiv.textContent = 'Número ganador: -'; // Reiniciar el resultado
             resultadosTabla.innerHTML = ''; // Limpiar la tabla de resultados
             dibujarRuleta(); // Redibujar la ruleta con los números mezclados
         });
