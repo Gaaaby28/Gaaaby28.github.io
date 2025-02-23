@@ -114,7 +114,7 @@
     <div class="container">
         <div id="piliapp" class="row">
             <div class="col-12">
-                                <div class="row">
+                <div class="row">
                     <div id="header" class="col-12 text-center pt-3 pb-3">
                         <h1 id="titulo">Ruleta Aleatoria</h1>
                     </div>
@@ -153,11 +153,12 @@
         const canvas = document.getElementById('wheel');
         const ctx = canvas.getContext('2d');
         const spinButton = document.querySelector('.spin-btn');
-        const resetButton = document.querySelector('.reset-btn');
+                const resetButton = document.querySelector('.reset-btn');
         const resultadoDiv = document.getElementById('resultado');
         const resultadosTabla = document.getElementById('resultados-tabla').getElementsByTagName('tbody')[0];
-        let numeros = Array.from({ length: 100 }, (_, i) => i); // Números del 1 al 100
+        let numeros = Array.from({ length: 100 }, (_, i) => i + 1); // Números del 1 al 100
         let anguloActual = 0;
+        let contadorGiros = 0; // Contador de giros
 
         // Función para mezclar los números
         function mezclarNumeros() {
@@ -202,39 +203,55 @@
         dibujarRuleta(); // Dibujar la ruleta
 
         function girarRuleta() {
-            const vueltas = Math.floor(Math.random() * 10) + 5; // Número de vueltas aleatorias
-            const anguloFinal = anguloActual + vueltas * 360 + Math.random() * 360; // Calcular el ángulo final
-            anguloActual = anguloFinal % 360; // Mantener el ángulo actual dentro de 0-360
-            
-            canvas.style.transform = `rotate(${anguloFinal}deg)`; // Aplicar la rotación
-            
-            setTimeout(() => {
-                const anguloPorNumero = 360 / numeros.length; // Calcular el ángulo por número
-                const numeroGanador = Math.floor((360 - (anguloActual % 360)) / anguloPorNumero); // Determinar el número ganador
-                                const numeroFinal = numeros[numeroGanador];
-                
-                resultadoDiv.textContent = `Número ganador: ${numeroFinal}`; // Mostrar el número ganado
-                
-                // Agregar el resultado a la tabla
-                const nuevaFila = resultadosTabla.insertRow();
-                const celdaGiro = nuevaFila.insertCell(0);
-                const celdaNumero = nuevaFila.insertCell(1);
-                celdaGiro.textContent = resultadosTabla.rows.length; // Número de giro
-                celdaNumero.textContent = numeroFinal; // Número ganado
-                
-                // Lanzar confeti
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 }
-                });
-            }, 4000); // Esperar 4 segundos antes de mostrar el resultado
-        }
+    contadorGiros++; // Incrementar el contador de giros
+    let vueltas = Math.floor(Math.random() * 10) + 5; // Número de vueltas aleatorias
+    let anguloFinal;
+
+    // Buscar la posición actual del número 29
+    const anguloPorNumero = 360 / numeros.length;
+    const indice29 = numeros.indexOf(29); // Buscar la posición de 29 después de cada mezcla
+    const posicion29 = indice29 * anguloPorNumero; // Calcular el ángulo donde está el 29
+
+    // Si es la quinta vuelta, forzar el ángulo a la posición de 29
+    if (contadorGiros === 5) {
+        anguloFinal = (vueltas * 360) + posicion29; // Asegurar que caiga en 29
+    } else {
+        anguloFinal = anguloActual + vueltas * 360 + Math.random() * 360; // Giro aleatorio normal
+    }
+
+    anguloActual = anguloFinal % 360; // Mantener el ángulo en el rango 0-360
+
+    canvas.style.transform = `rotate(${anguloFinal}deg)`; // Aplicar la rotación
+
+    setTimeout(() => {
+        // Determinar el número ganador con base en el ángulo final
+        const numeroGanador = Math.floor((360 - (anguloActual % 360)) / anguloPorNumero);
+        const numeroFinal = numeros[numeroGanador];
+
+        resultadoDiv.textContent = `Número ganador: ${numeroFinal}`;
+
+        // Agregar el resultado a la tabla
+        const nuevaFila = resultadosTabla.insertRow();
+        const celdaGiro = nuevaFila.insertCell(0);
+        const celdaNumero = nuevaFila.insertCell(1);
+        celdaGiro.textContent = resultadosTabla.rows.length; // Número de giro
+        celdaNumero.textContent = numeroFinal; // Número ganado
+
+        // Lanzar confeti
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }, 4000); // Esperar 4 segundos antes de mostrar el resultado
+}
+
 
         spinButton.addEventListener('click', girarRuleta); // Evento para girar la ruleta
         resetButton.addEventListener('click', () => {
             mezclarNumeros(); // Mezclar los números al hacer clic en "Acomodar"
             anguloActual = 0; // Reiniciar el ángulo
+            contadorGiros = 0; // Reiniciar el contador de giros
             canvas.style.transform = 'rotate(0deg)'; // Reiniciar la rotación
             resultadoDiv.textContent = 'Número ganador: -'; // Reiniciar el resultado
             resultadosTabla.innerHTML = ''; // Limpiar la tabla de resultados
