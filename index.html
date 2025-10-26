@@ -1,10 +1,106 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-   
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página con Estilo Telegram QR</title>
+    
+    <style>
+        body {
+            background-image: url('img/fnd.jpg'); /* Reemplaza 'img/fondo.jpg' con tu ruta */
+            background-size: cover;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif; /* Fuente similar a Telegram */
+        }
+        
+        /* ESTILOS DE LA TARJETA TELEGRAM (CUADRO CENTRAL) */
+        .telegram-card {
+            background-color: #FFFFFF; /* Fondo blanco */
+            padding: 25px; /* Espaciado interno */
+            border-radius: 20px; /* Bordes más redondeados como Telegram */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+            text-align: center;
+            max-width: 320px; /* Ancho típico de un QR de Telegram */
+            width: 90%; /* Ancho responsivo */
+            box-sizing: border-box; /* Incluye padding en el ancho */
+            position: relative; /* Para posicionar el avatar circular */
+            margin-top: 50px; /* Para dejar espacio al avatar superior */
+        }
+
+        /* ESTILO DEL CÍRCULO DEL AVATAR SUPERIOR */
+        .avatar-top-circle {
+            width: 60px;
+            height: 60px;
+            background-color: #487848; /* Color violeta/azul de Telegram */
+            border-radius: 50%; /* Hacerlo circular */
+            position: absolute; /* Posicionamiento absoluto */
+            top: -30px; /* Medio círculo fuera de la tarjeta */
+            left: 50%; /* Centrado horizontal */
+            transform: translateX(-50%); /* Ajuste fino de centrado */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra para que flote */
+            z-index: 10; /* Asegura que esté por encima de la tarjeta */
+        }
+        
+        /* ESTILO DE LA IMAGEN CENTRAL (EL QR) */
+        .qr-image {
+            width: 90%; /* Ocupa la mayor parte del ancho de la tarjeta */
+            max-width: 250px; /* Limita el tamaño máximo */
+            height: auto;
+            margin-top: 15px; /* Espacio debajo del posible avatar */
+            margin-bottom: 20px;
+        }
+
+        /* ESTILO DEL NOMBRE DE USUARIO (Debajo del QR) */
+        .username-text {
+            color: #222; /* Texto oscuro */
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        /* ESTILOS DEL ENLACE (Botón) */
+        .enlace-accion {
+            display: inline-block;
+            background-color: #222; /* Color azul de Telegram */
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 25px; /* Bordes muy redondeados como botones de Telegram */
+            font-weight: bold;
+            transition: background-color 0.3s ease; /* Transición suave */
+            font-size: 1em;
+        }
+
+        .enlace-accion:hover {
+            background-color: #487848; /* Tono más oscuro al pasar el mouse */
+        }
+    </style>
 </head>
 <body>
-   <p>google.com</p>
+
+    <div class="telegram-card">
+        
+        <div class="avatar-top-circle">T</div> <img src="img/qr.png" alt="Código QR de Telegram Bot" class="qr-image">
+        
+        <p class="username-text">@TGCAPPG_BOT</p> <a href="https://t.me/TGCAPPG_BOT" target="_blank" class="enlace-accion">
+            COMPARTIR CÓDIGO QR
+        </a>
+        
+    </div>
+
 </body>
 </html>
+
 
